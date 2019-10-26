@@ -21,3 +21,19 @@ app.set("view engine", "handlebars");
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper";
 mongoose.connect(MONGODB_URI);
+
+// Routes
+require("./routes/apiRoute")(app);
+require("./routes/htmlRoute")(app);
+
+
+// Starting the server ------------------------------------/
+app.listen(PORT, function () {
+    console.log(
+        "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
+        PORT,
+        PORT
+    );
+});
+
+module.exports = app;
