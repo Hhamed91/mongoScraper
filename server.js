@@ -20,7 +20,9 @@ app.engine(
 app.set("view engine", "handlebars");
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper";
-mongoose.connect(MONGODB_URI);
+// mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+
+mongoose.connect(MONGODB_URI, {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
 
 // Routes
 require("./routes/apiRoute")(app);
