@@ -136,7 +136,17 @@ module.exports = function (app) {
         });
 });
 
-
+ // route to get a saved job populated with all its notes
+ app.get("/savedJobs/:id", function (req, res) {
+    db.savedJobs.findOne({ _id: req.params.id })
+        .populate("notes")
+        .then(function (dbJobs) {
+            res.json(dbJobs);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
 
 
 
