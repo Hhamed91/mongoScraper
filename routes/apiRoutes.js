@@ -7,7 +7,7 @@ module.exports = function (app) {
     // route to scrape jobs from ziprecruiter website and save/add each job to Article collection
 
     app.get("/scrape", function (req, res) {
-        db.Article.deleteMany({}, function (err) { // remove all old articles 
+        db.Jobs.deleteMany({}, function (err) { // remove all old articles 
             if (err) throw err;
 
 
@@ -35,12 +35,62 @@ module.exports = function (app) {
                             console.log(err);
                         });
                 });
-                res.send("Scrape Complete");
+                res.send("Scrape for new job is complete");
             })
         });
     });
 
 
-  
+    // route to get all scraped jobs from jobs table
+    app.get("/jobs", function (req, res) {
+        db.Jobs.find({})
+            .then(function (dbJobs) {
+                res.json(dbJobs);
+            })
+            .catch(function (err) {
+                res.json(err);
+            });
+    });
 
+    // route to clear/delete all scraped articles in Article collection
+    app.delete("/jobs", function (req, res) {
+        db.Jobs.deleteMany({}, function (err) {
+            if (err) throw err;
+            res.send("Clear complete. No more jobs listed");
+        });
+    });
+
+
+    // route to save article  
+    app.post("/save/:id", function (req, res) {
+        db.Jobs.findOne({ _id: req.params.id }) // grab the job (that needs to be saved) from job collection
+            .then(function (dbJobs) {
+
+                db.savedJobs.findOne({ title: dbJobs.title }) // check if the article already exists in savedJobs collection
+                    .then(function (dbsavedJobs) {
+
+                        if (dbsavedJobs) { // if found, return "already saved"
+                            res.send("Job already saved")
+                        } else { // if not found, then add/insert to savedJobs collection
+                            var newJobs = {};
+                            newJobs.title = dbJobs.title;
+                            newJobs.link = dbJobs.link;
+                            newJobs.summary = dbJobs.summary;
+
+                            db.savedJobs.create(newJobs)
+                                .then(function () {
+                                    res.send("Jobs saved");
+                                })
+                                .catch(function (err) {
+                                    res.send(err);
+                                });
+                        }
+                    }).catch(function (err) {
+                        res.send(err);
+                    });
+            })
+            .catch(function (err) {
+                res.send(err);
+            });
+    });
 }
