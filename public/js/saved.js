@@ -89,3 +89,31 @@ $(document).on("click", ".notes-btn", function () {
         $('#modal' + jobID).modal().modal('open');
     });
 })
+
+$(document).on("click", ".add-note-btn", function (event) {
+    event.preventDefault();
+    var jobID = $(this).attr("data-jobID");
+  
+    $.ajax({
+      method: "POST",
+      url: "/savedJobs/" + jobID,
+      data: {
+        body: $("#add-note-for" + jobID).val().trim()
+      }
+    }).then(function (data) {
+      location.reload();
+    });
+  })
+  
+  
+  $(document).on("click", ".remove-note-button", function () {
+    var noteID = $(this).attr("data-noteid");
+  
+    $.ajax({
+      url: "/notes/" + noteID,
+      type: "DELETE",
+      success: function (data) {
+        location.reload();
+      }
+    });
+  })
