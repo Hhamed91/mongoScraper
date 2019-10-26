@@ -7,7 +7,7 @@
   
 .main-section ::after {
     content: "";
-    background: url("../images/readingpaper.jpg");
+    background: url("../images/job.jpg");
     background-size: cover;
     opacity: 0.2;
     top: 0;

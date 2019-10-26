@@ -7,38 +7,71 @@ module.exports = function (app) {
     // route to scrape jobs from ziprecruiter website and save/add each job to jobs collection
 
     app.get("/scrape", function (req, res) {
-        db.Job.deleteMany({}, function (err) { // remove all old jobs 
+
+        db.Job.deleteMany({}, function (err) { // remove all old articles 
             if (err) throw err;
 
-
-            //https://www.ziprecruiter.com/candidate/search?search=developer&location=San+Francisco%2C+CA
-
-            axios.get("https://www.ziprecruiter.com/candidate/search?search=developer&location=San+Francisco%2C+CA").then(function (response) {
+            axios.get("https://www.npr.org").then(function (response) {
                 var $ = cheerio.load(response.data);
 
-                $(".job_content").each(function (i, element) {
+                $(".story-text").each(function (i, element) {
                     var result = {};
-                    //document.querySelector("#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > a > h2")
-                    result.title = $(this).children("a").children("h2.title").text();
 
-                    //#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > a
+                    result.title = $(this).children("a").children("h3.title").text();
                     result.link = $(this).children("a").attr("href");
-                    //#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > p.job_snippet > a
-
-                    result.summary = $(this).children("a").children("p.job_snippet").text();
+                    result.summary = $(this).children("a").children("p.teaser").text();;
 
                     db.Job.create(result) // then add new ones
-                        .then(function (dbJobs) {
-                            console.log(dbJobs);
+                        .then(function (dbJob) {
+                            console.log(dbJob);
                         })
                         .catch(function (err) {
                             console.log(err);
                         });
                 });
-                res.send("Scrape for new job is complete");
+                res.send("Scrape Complete");
             })
         });
     });
+
+    //     db.Job.deleteMany({}, function (err) { // remove all old jobs 
+    //         if (err) throw err;
+
+
+    //         //https://www.ziprecruiter.com/candidate/search?search=developer&location=San+Francisco%2C+CA
+    //         //https://stackoverflow.com/jobs?q=full+stack&l=San+Francisco%2C+CA%2C+USA&d=20&u=Miles
+    //         //https://www.reddit.com/r/SFBayJobs/
+
+    //         axios.get("https://www.npr.org").then(function (response) {
+    //             // console.log(response.data)
+    //             var $ = cheerio.load(response.data);
+                
+    //             $(".story-text").each(function (i, element) {
+    //                 var result = {};
+    //                 //document.querySelector("#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > a > h2")
+    //                 //#mainbar > div.js-search-results.flush-left > div > div.-item.-job.p24.pl48.bb.ps-relative.bc-black-2.js-dismiss-overlay-container._highlighted.pt32
+    //                 result.title = $(this).children("a").children("h2.title").text();
+
+    //                 //#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > a
+    //                 result.link = $(this).children("a").attr("href");
+    //                 //#quiz-card-siriusd30544efd30544ef-5000546074506 > div.job_content > p.job_snippet > a
+
+    //                 result.summary = $(this).children("a").children("p.teaser").text();
+
+    //                 db.Job.create(result) // then add new ones
+    //                     .then(function (dbJobs) {
+    //                         console.log(dbJobs);
+    //                     })
+    //                     .catch(function (err) {
+    //                         console.log(err);
+    //                     });
+    //             });
+    //             res.send("Scrape for new job is complete");
+    //         })
+    //     });
+    // });
+
+
 
 
     // route to get all scraped jobs from jobs table
@@ -54,7 +87,7 @@ module.exports = function (app) {
 
     // route to clear/delete all scraped jobs in jobs collection
     app.delete("/jobs", function (req, res) {
-        db.Jobs.deleteMany({}, function (err) {
+        db.Job.deleteMany({}, function (err) {
             if (err) throw err;
             res.send("Clear complete. No more jobs listed");
         });
