@@ -105,4 +105,33 @@ module.exports = function (app) {
             });
     });
 
+
+    // route to clear/delete all saved jobs in SavedJobs collection
+    app.delete("/savedJobs", function (req, res) {
+        db.savedJobs.deleteMany({}, function (err) {
+            if (err) throw err;
+            res.send("Clear Complete");
+        });
+    });
+
+     // route to clear/delete ONE saved job in savedJobs collection
+     app.delete("/savedJobs/:id", function (req, res) {
+        db.savedJobs.deleteOne({ _id: req.params.id }, function (err) {
+            if (err) throw err;
+            res.send("Delete Complete");
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
