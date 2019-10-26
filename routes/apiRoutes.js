@@ -4,10 +4,10 @@ var db = require("../models");
 
 module.exports = function (app) {
 
-    // route to scrape jobs from ziprecruiter website and save/add each job to Article collection
+    // route to scrape jobs from ziprecruiter website and save/add each job to jobs collection
 
     app.get("/scrape", function (req, res) {
-        db.Jobs.deleteMany({}, function (err) { // remove all old articles 
+        db.Jobs.deleteMany({}, function (err) { // remove all old jobs 
             if (err) throw err;
 
 
@@ -52,7 +52,7 @@ module.exports = function (app) {
             });
     });
 
-    // route to clear/delete all scraped articles in Article collection
+    // route to clear/delete all scraped jobs in jobs collection
     app.delete("/jobs", function (req, res) {
         db.Jobs.deleteMany({}, function (err) {
             if (err) throw err;
@@ -61,12 +61,12 @@ module.exports = function (app) {
     });
 
 
-    // route to save article  
+    // route to save jobs  
     app.post("/save/:id", function (req, res) {
         db.Jobs.findOne({ _id: req.params.id }) // grab the job (that needs to be saved) from job collection
             .then(function (dbJobs) {
 
-                db.savedJobs.findOne({ title: dbJobs.title }) // check if the article already exists in savedJobs collection
+                db.savedJobs.findOne({ title: dbJobs.title }) // check if the jobs already exists in savedJobs collection
                     .then(function (dbsavedJobs) {
 
                         if (dbsavedJobs) { // if found, return "already saved"
