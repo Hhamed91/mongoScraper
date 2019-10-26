@@ -114,45 +114,48 @@ module.exports = function (app) {
         });
     });
 
-     // route to clear/delete ONE saved job in savedJobs collection
-     app.delete("/savedJobs/:id", function (req, res) {
+    // route to clear/delete ONE saved job in savedJobs collection
+    app.delete("/savedJobs/:id", function (req, res) {
         db.savedJobs.deleteOne({ _id: req.params.id }, function (err) {
             if (err) throw err;
             res.send("Delete Complete");
         });
     });
 
-   // route to add a new note to a saved job
-   app.post("/savedJobs/:id", function (req, res) {
-    db.Note.create(req.body)
-        .then(function (dbNote) {
-            return db.savedJobs.findOneAndUpdate({ _id: req.params.id }, { $push: { notes: dbNote._id } }, { new: true });
-        })
-        .then(function (dbJobs) {
-            res.json(dbJobs);
-        })
-        .catch(function (err) {
-            res.json(err);
+    // route to add a new note to a saved job
+    app.post("/savedJobs/:id", function (req, res) {
+        db.Note.create(req.body)
+            .then(function (dbNote) {
+                return db.savedJobs.findOneAndUpdate({ _id: req.params.id }, { $push: { notes: dbNote._id } }, { new: true });
+            })
+            .then(function (dbJobs) {
+                res.json(dbJobs);
+            })
+            .catch(function (err) {
+                res.json(err);
+            });
+    });
+
+    // route to get a saved job populated with all its notes
+    app.get("/savedJobs/:id", function (req, res) {
+        db.savedJobs.findOne({ _id: req.params.id })
+            .populate("notes")
+            .then(function (dbJobs) {
+                res.json(dbJobs);
+            })
+            .catch(function (err) {
+                res.json(err);
+            });
+    });
+
+
+
+    // route to delete a note for a saved job
+    app.delete("/notes/:id", function (req, res) {
+        db.Note.deleteOne({ _id: req.params.id }, function (err) {
+            if (err) throw err;
+            res.send("Delete Note Complete");
         });
-});
+    });
 
- // route to get a saved job populated with all its notes
- app.get("/savedJobs/:id", function (req, res) {
-    db.savedJobs.findOne({ _id: req.params.id })
-        .populate("notes")
-        .then(function (dbJobs) {
-            res.json(dbJobs);
-        })
-        .catch(function (err) {
-            res.json(err);
-        });
-});
-
-
-
-
-
-
-
-
-}
+};
