@@ -122,8 +122,19 @@ module.exports = function (app) {
         });
     });
 
-
-
+   // route to add a new note to a saved job
+   app.post("/savedJobs/:id", function (req, res) {
+    db.Note.create(req.body)
+        .then(function (dbNote) {
+            return db.savedJobs.findOneAndUpdate({ _id: req.params.id }, { $push: { notes: dbNote._id } }, { new: true });
+        })
+        .then(function (dbJobs) {
+            res.json(dbJobs);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
 
 
 
