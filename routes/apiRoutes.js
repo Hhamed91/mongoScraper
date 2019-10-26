@@ -93,4 +93,16 @@ module.exports = function (app) {
                 res.send(err);
             });
     });
+
+    // route to get all saved jobs from SavedJobs collection
+    app.get("/savedJobs", function (req, res) {
+        db.savedJobs.find({})
+            .then(function (dbsavedJobs) {
+                res.json(dbsavedJobs);
+            })
+            .catch(function (err) {
+                res.json(err);
+            });
+    });
+
 }
